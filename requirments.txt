@@ -1,0 +1,10 @@
+scipy
+pytorch-lightning
+tqdm
+wandb
+scikit-learn==1.2.2
+transformers==4.35.2
+timm
+wget
+seaborn
+scikit-image
