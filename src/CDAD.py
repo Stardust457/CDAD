@@ -106,52 +106,48 @@ class AttentionBlock(nn.Module):
 
 class ConvBN(nn.Module):
     def __init__(self, c1, c2, k=1, s=1, p=None, g=1, d=1):
-        """构造一个包含卷积与批归一化的基本层。"""
+
         super().__init__()
-        # 若未指定填充，自动设置为卷积核尺寸的一半；若k为列表，则对每个元素进行相同计算。
+
         p = k // 2 if isinstance(k, int) else [x // 2 for x in k]
-        # 初始化一个不使用偏置的二维卷积层
+
         self.conv = nn.Conv2d(c1, c2, k, s, p, groups=g, dilation=d, bias=False)
-        # 初始化批归一化层以稳定训练过程
+
         self.bn = nn.BatchNorm2d(c2)
-        # 采用SiLU激活函数（注意：当前前向传播版本未使用激活）
+
         self.act = nn.SiLU()
 
     def forward(self, x):
-        """对输入张量执行卷积和批归一化操作。"""
-        return self.bn(self.conv(x))  # 仅执行卷积和BN，不包括激活。  # ai缝合大王
+
+        return self.bn(self.conv(x))
 
 
 class Conv_Block(nn.Module):
     def __init__(self, dim, mlp_ratio=3, drop_path=0.):
-        """
-        Conv_Block模块通过深度卷积与1x1卷积扩展通道，
-        结合ReLU6非线性激活和残差连接，来实现特征的重分配。
-        """
         super().__init__()
-        # 采用7x7深度卷积，其中groups设为dim实现逐通道卷积
+
         self.dwconv = ConvBN(dim, dim, 7, g=dim)
-        # 两个1x1卷积分别用于将特征扩展至mlp_ratio倍的通道数
+
         self.f1 = nn.Conv2d(dim, mlp_ratio * dim, 1)
         self.f2 = nn.Conv2d(dim, mlp_ratio * dim, 1)
-        # 通过1x1卷积整合扩展后的特征
+
         self.g = ConvBN(mlp_ratio * dim, dim, 1)
-        # 使用另一个7x7深度卷积实现进一步的特征重分配
+
         self.dwconv2 = nn.Conv2d(dim, dim, 7, 1, (7 - 1) // 2, groups=dim)
-        # ReLU6激活函数限制输出范围
+
         self.act = nn.ReLU6()
-        # 引入DropPath机制来随机丢弃部分路径以缓解过拟合；当drop_path=0时，该层为恒等映射
+
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
 
     def forward(self, x):
-        """前向传播：提取特征后进行非线性变换，最后通过残差连接融合输入。"""
-        input = x  # 保存原始输入用于残差连接
-        x = self.dwconv(x)  # 通过7x7深度卷积提取局部特征
-        x1, x2 = self.f1(x), self.f2(x)  # 通过两个1x1卷积扩展特征通道
-        x = self.act(x1) * x2  # 将激活后的第一分支与第二分支逐元素相乘
-        x = self.g(x)  # 使用1x1卷积融合特征
-        x = self.dwconv2(x)  # 再次应用7x7深度卷积细化特征
-        x = input + self.drop_path(x)  # 添加残差连接并应用DropPath机制
+
+        input = x
+        x = self.dwconv(x)
+        x1, x2 = self.f1(x), self.f2(x)
+        x = self.act(x1) * x2
+        x = self.g(x)
+        x = self.dwconv2(x)
+        x = input + self.drop_path(x)
         return x
 
 
@@ -194,11 +190,11 @@ class MFFD(nn.Module):
 
         x = x.reshape(-1, 37, 37, 1024)
         x = x.permute(0, 3, 1, 2)
-        x = self.block(x)  # x.shape=16,1024,37,37
+        x = self.block(x)
         x = x.reshape(-1, 1024, 37 * 37)
         x = x.transpose(1, 2)
 
-        # 残差连接
+        #
         x = x + transformer_output
         x = self.output_layer(x).squeeze(-1)
         return x
@@ -212,7 +208,7 @@ class CDAD(pl.LightningModule):
                  log_pixel_metrics, smoothing_sigma, smoothing_radius):
         super().__init__()
         self.save_hyperparameters()
-        self.automatic_optimization = False  # 这里改动了
+        self.automatic_optimization = False  #
 
         self.feature_extractor = FeatureExtractor_ViT(hf_path, layers_to_extract_from, image_size, self.device)
         self.attn_output = True
@@ -237,7 +233,7 @@ class CDAD(pl.LightningModule):
         # models
         self.discriminator = MFFD(embed_dim, hidden_dim, num_patches, dsc_layers, dsc_heads,
                                                dsc_dropout).to(self.device)
-        self.fa = FeatureAdaptor(embed_dim).to(self.device)  # 改动
+        self.fa = FeatureAdaptor(embed_dim).to(self.device)
 
         # focal loss
         self.focal_loss = FocalLoss().to(self.device)
@@ -257,23 +253,23 @@ class CDAD(pl.LightningModule):
     def configure_optimizers(self):
         optimizer_dsc = optim.AdamW(self.discriminator.parameters(), lr=self.hparams.lr, weight_decay=self.hparams.wd)
 
-        optimizer_fa = optim.AdamW(self.fa.parameters(), lr=self.hparams.lr_adaptor)  # 改动
+        optimizer_fa = optim.AdamW(self.fa.parameters(), lr=self.hparams.lr_adaptor)
 
         lr_scheduler_dsc = optim.lr_scheduler.CosineAnnealingLR(optimizer_dsc, self.hparams.epochs,
                                                                 self.hparams.lr * self.hparams.lr_decay_factor)
 
-        lr_scheduler_fa = optim.lr_scheduler.LambdaLR(optimizer_fa, lr_lambda=lambda epoch: 1)  # 改动
+        lr_scheduler_fa = optim.lr_scheduler.LambdaLR(optimizer_fa, lr_lambda=lambda epoch: 1)
 
         return [
-            {  # 判别器优化组
+            {  #
                 "optimizer": optimizer_dsc,
                 "lr_scheduler": {
                     "scheduler": lr_scheduler_dsc,
-                    "interval": "epoch"  # 每个epoch更新
-                    # 可添加其他参数如frequency/monitor等
+                    "interval": "epoch"
+                    #
                 }
             },
-            {  # fa模块优化组
+            {  #
                 "optimizer": optimizer_fa,
                 "lr_scheduler": {
                     "scheduler": lr_scheduler_fa,
@@ -284,7 +280,7 @@ class CDAD(pl.LightningModule):
 
     def _step(self, images):
         features = self.feature_extractor(images)
-        features = self.fa(features)  # 改动
+        features = self.fa(features)
         scores = self.discriminator(features)
         return scores
 
@@ -301,7 +297,7 @@ class CDAD(pl.LightningModule):
         for i in range(batch_size):
             num_fake = random.randint(1, num_patches)
             random_indices = torch.randperm(num_patches)[:num_fake]
-            masks[i, random_indices] = True    # 使用花式索引
+            masks[i, random_indices] = True
             fake_features[i, random_indices, :] += noise[i, random_indices, :]
 
         return fake_features, masks
@@ -396,14 +392,14 @@ class CDAD(pl.LightningModule):
         return fake_features, masks
 
     def training_step(self, batch, batch_idx):
-        images = batch[0]  # 取到一个batch的图片
+        images = batch[0]
 
-        if self.attn_output:  # attn_output为true，则返回注意力图
+        if self.attn_output:
             features, attn_map = self.feature_extractor(images, output_attn=True)
-            features = self.fa(features)  # 改动
+            features = self.fa(features)
         else:
             features = self.feature_extractor(images)
-            features = self.fa(features)  # 改动
+            features = self.fa(features)
 
         # stack loss
         loss = 0

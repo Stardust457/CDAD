@@ -66,7 +66,7 @@ def run(args):
         else:
             model = CDAD(lr=args.lr,
                         lr_decay_factor=args.lr_decay_factor,
-                        lr_adaptor=args.lr_adaptor,#改动
+                        lr_adaptor=args.lr_adaptor,
                         hf_path=args.hf_path,
                         layers_to_extract_from=args.layers_to_extract_from,
                         hidden_dim=args.hidden_dim,
