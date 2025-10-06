@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("--wandb_name", type=str, default="default", help="WandB run name for logging")
     parser.add_argument('--data_dir', type=str, default='data/', help='Data directory where to store/find the dataset.')
     parser.add_argument("--run_type", default="cdad", choices=['test_data', 'cdad', 'viz_segmentation'], help="The files that have to be run.")
-    parser.add_argument("--model_type", default="ViT", choices=['ViT', 'MLP'], help="The type of model to be trained for KDAD.")
+    parser.add_argument("--model_type", default="ViT", choices=['ViT', 'MLP'], help="The type of model to be trained for CDAD.")
     parser.add_argument("--image_size", type=int, default=224, help="Input size of ViT images")
     parser.add_argument("--layers_to_extract_from", type=str, default="2,3", help="Layers to extract from as a comma-separated string")
     parser.add_argument("--wd", type=float, default=0.00001, help="Weight decay for the discriminator")
