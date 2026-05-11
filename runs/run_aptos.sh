@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# evaluate image_auroc
+VAL_MODE="image_auroc"
+VAL_ARGS=(--val_monitor "image_auroc" --log_pixel_metrics 0)
+
+COMMON_ARGS=(
+    --epochs 20
+    --batch_size 16
+    --test_batch_size 16
+    --lr 0.0005
+    --lr_decay_factor 0.2
+    --lr_adaptor 0.0001
+    --seed 0
+    --hf_path 'vit_large_patch14_dinov2.lvd142m'
+    --image_size 518
+    --layers_to_extract_from '24'
+    --hidden_dim 2048
+    --noise_std 0.25
+    --log_every_n_steps 4
+    --run_type "cdad"
+    --dataset_name 'aptos'
+    --wandb_entity ""
+    --wandb_api_key ""
+    --wandb_name "CDAD"
+    --data_dir './autodl-tmp'
+    --num_fake_patches -1
+    --dsc_layers 1
+    --dsc_heads 4
+    --dsc_dropout 0.1
+    --fake_feature_type 'random'
+    --top_k 10
+    --smoothing_sigma 16
+    --smoothing_radius 18
+    --shots -1
+)
+
+echo "========================================"
+echo "  APTOS                                 "
+echo "========================================"
+echo ""
+
+python main.py \
+    --normal_class "aptos" \
+    "${COMMON_ARGS[@]}" \
+    "${VAL_ARGS[@]}"
+
+EXIT_CODE=$?
+
+echo ""
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "========================================"
+    echo "  APTOS training failed (exit: ${EXIT_CODE})"
+    echo "========================================"
+    exit $EXIT_CODE
+else
+    echo "========================================"
+    echo "  APTOS training completed successfully."
+    echo "========================================"
+fi
