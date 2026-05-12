@@ -40,7 +40,7 @@ This project is evaluated on five datasets. Please download each dataset and pla
 
 ### 4. Aircraft-FGVC
 
-This dataset is automatically downloaded via torchvision in our code, so no manual download is required.
+- This dataset is automatically downloaded via torchvision in our code, so no manual download is required.
 
 ---
 
