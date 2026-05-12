@@ -42,6 +42,10 @@ This project is evaluated on five datasets. Please download each dataset and pla
 
 - This dataset is automatically downloaded via torchvision in our code, so no manual download is required.
 
+### 5. APTOS
+
+- **Download:** [APTOS Dataset](https://www.kaggle.com/competitions/aptos2019-blindness-detection/data)
+
 ---
 
 ## 🚀 Training & Evaluation
@@ -64,4 +68,16 @@ bash runs/run_mvtec_ad.sh
 
 ```bash
 bash runs/run_mvtec_loco.sh
+```
+
+### Aircraft-FGVC
+
+```bash
+bash runs/run_aircraft_fgvc.sh
+```
+
+### APTOS
+
+```bash
+bash runs/run_aptos.sh
 ```
