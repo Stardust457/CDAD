@@ -50,7 +50,7 @@ This project is evaluated on five datasets. Please download each dataset and pla
 
 ## 🚀 Training & Evaluation
 
-Each dataset has a dedicated shell script under `runs/` that handles both training and evaluation end-to-end.
+Each dataset has a dedicated shell script under `runs/` that handles both training and evaluation. Replace `wandb_entity` and `wandb_api_key` in the shell script with your own W&B entity and API key. Update `data_dir` to the path where your datasets are stored.
 
 ### MPDD
 
