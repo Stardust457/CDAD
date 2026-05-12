@@ -46,6 +46,19 @@ This project is evaluated on five datasets. Please download each dataset and pla
 
 - **Download:** [APTOS Dataset](https://www.kaggle.com/competitions/aptos2019-blindness-detection/data)
 
+After downloading, the APTOS dataset should be organized into the following structure:
+
+```
+APTOS/
+└── original/
+    ├── test_images/
+    ├── train_images/
+    ├── test.csv
+    └── train.csv
+```
+
+
+
 ---
 
 ## 🚀 Training & Evaluation
