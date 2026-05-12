@@ -112,3 +112,9 @@ bash runs/run_aircraft_fgvc.sh
 ```bash
 bash runs/run_aptos.sh
 ```
+
+---
+
+## 🙏 Acknowledgements
+
+This project is built upon [GeneralAD](https://github.com/LucStrater/GeneralAD) by LucStrater. We sincerely thank the authors for their excellent work and for making their code publicly available.
