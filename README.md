@@ -57,7 +57,25 @@ APTOS/
     └── train.csv
 ```
 
+Then run the following command to reorganize the dataset into a file structure suitable for anomaly detection:
 
+```bash
+python ./prepare_data/prepare_aptos.py --data-folder ./your_data_dir/APTOS/original --save-folder ./your_data_dir/APTOS
+```
+
+The final directory structure should look as follows:
+
+```
+APTOS/
+├── test/
+│   ├── NORMAL/
+│   └── ABNORMAL/
+├── train/
+│   └── NORMAL/
+└── original/
+```
+
+The `original/` folder can then be safely removed.
 
 ---
 
