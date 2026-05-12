@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 ## 📦 Datasets
 
-This project is evaluated on five benchmarks. Please download each dataset and place it under the appropriate directory before running.
+This project is evaluated on five datasets. Please download each dataset and place it under the appropriate directory before running.
 
 ### 1. MPDD
 
@@ -37,6 +37,10 @@ This project is evaluated on five benchmarks. Please download each dataset and p
 ### 3. MVTec-LOCO
 
 - **Download:** [MVTec LOCO Dataset](https://www.mvtec.com/company/research/datasets/mvtec-loco)
+
+### 4. Aircraft-FGVC
+
+This dataset is automatically downloaded via torchvision in our code, so no manual download is required.
 
 ---
 
